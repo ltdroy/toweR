@@ -1,12 +1,20 @@
 Package: toweR
-Title: What the Package Does (One Line, Title Case)
+Title: Make complex messy vertical merges (row binds) of multiple files efficient, easy and safe
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+    person("Laurence", "Droy", ,
+          "laurence.t.droy@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Description: Provides a set of tools for loading, manipulating and vertically combining multiple rectangular datasets with (potentially) inconsistent structure. It provides an efficient way to automate and verify otherwise labourious/error-prone processes of: (a) loading a large number of datasets in a folder, with potentially inconsistent formats (e.g. excel/csv) (b) storing these datasets in a structured object and attaching/extracting file metadata, (c) harmonising and checking the column names and structure of each dataset (d) verifying the coverage of the set of datasets across variables and cases (e.g. over a time period or across groups).
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports: 
+    assertthat,
+    tibble,
+    lubridate,
+    dplyr
