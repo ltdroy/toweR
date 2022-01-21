@@ -18,6 +18,8 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
+STILL IN DEVELOPMENT - NOT FOR USE
+
 The goal of toweR is to make the job of loading and vertically combining multiple rectangular data-files more efficient (less user time consumed/wasted), easier (less manual effort from the user) and safer (reduced error risk of user error/unknown data problems). It provides specialized tools for the situation where the data files to be combined vertically may have an inconsistent structure. 
 
 A vertical merge is different to a join, in a *join* we are usually combining two datasets with different types (and/or) levels of measurement (e.g. the demographic characteristics of UK households, and the labour-market characteristics of UK regions), on a shared key (e.g. UK regional location).
@@ -199,7 +201,7 @@ You can install the development version of toweR like so:
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-library(toweR)
+#library(toweR)
 ## basic example code
 ```
 

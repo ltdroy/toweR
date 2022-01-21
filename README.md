@@ -4,7 +4,10 @@
 # toweR
 
 <!-- badges: start -->
+
 <!-- badges: end -->
+
+STILL IN DEVELOPMENT - NOT FOR USE
 
 The goal of toweR is to make the job of loading and vertically combining
 multiple rectangular data-files more efficient (less user time
@@ -29,6 +32,7 @@ A very simple (and familiar to most users) example of vertical merger in
 `R` is a call to `rbind()`.
 
 ``` r
+
 df1 <- tibble::tribble(
   ~ x, ~y, 
   1, "a",
@@ -70,6 +74,7 @@ So the case of `n > 2` doesn’t *necessarily* pose a problem (but see
 below).
 
 ``` r
+
 df1 <- tibble::tribble(
   ~ x, ~y, 
   1, "a",
@@ -127,6 +132,7 @@ silently (and potentially unexpectedly) padded with missing values for
 sets of cases that didn’t include that column.
 
 ``` r
+
 df1 <- tibble::tribble(
   ~ x, ~y, 
   1, "a",
@@ -165,6 +171,7 @@ dplyr::bind_rows(list(df1, df2))
 can lead to unexpected coercion of columns into undesirable formats.
 
 ``` r
+
 df1 <- tibble::tribble(
   ~ x, ~y, 
   "1", "a",
@@ -216,6 +223,7 @@ analytical decisions and/or unexpected results (like attempting to take
 the mean of x for groups in which it was not measured)
 
 ``` r
+
 df1 <- tibble::tribble(
   ~ x, ~y, ~z,
   1, "a", 1,
@@ -293,7 +301,7 @@ You can install the development version of toweR like so:
 This is a basic example which shows you how to solve a common problem:
 
 ``` r
-library(toweR)
+#library(toweR)
 ## basic example code
 ```
 
