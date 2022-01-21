@@ -18,3 +18,5 @@ Imports:
     tibble,
     lubridate,
     dplyr
+URL: https://github.com/ltdroy/toweR
+BugReports: https://github.com/ltdroy/toweR/issues
