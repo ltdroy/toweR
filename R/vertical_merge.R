@@ -51,6 +51,6 @@ vertical_merge <- function(
   add_metadata = TRUE,
   coverage = NULL) {
 
-
+  return(1)
 
 }

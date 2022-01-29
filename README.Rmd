@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/ltdroy/toweR/workflows/R-CMD-check/badge.svg)](https://github.com/ltdroy/toweR/actions)
+[![test-coverage](https://github.com/ltdroy/toweR/workflows/test-coverage/badge.svg)](https://github.com/ltdroy/toweR/actions)
 <!-- badges: end -->
 
 STILL IN DEVELOPMENT - NOT FOR USE

@@ -1,7 +1,7 @@
 test_that("dummy test", {
 
-  expect_true(
-    is.null(vertical_merge(1))
+  expect_equal(
+    vertical_merge(1), 1
   )
 
 
