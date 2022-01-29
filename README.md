@@ -5,6 +5,7 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/ltdroy/toweR/workflows/R-CMD-check/badge.svg)](https://github.com/ltdroy/toweR/actions)
 <!-- badges: end -->
 
 STILL IN DEVELOPMENT - NOT FOR USE
@@ -34,7 +35,6 @@ A trivial (and familiar to most users) example of vertical merger in `R`
 is a call to `rbind()`.
 
 ``` r
-
 df1 <- tibble::tribble(
   ~ x, ~y, 
   1, "a",
@@ -77,7 +77,6 @@ by column name. So the case of `n > 2` doesn’t *necessarily* pose a
 problem for vertical merges (but see below).
 
 ``` r
-
 df1 <- tibble::tribble(
   ~ x, ~y, 
   1, "a",
@@ -136,7 +135,6 @@ silently (and potentially unexpectedly) padded with missing values for
 sets of cases that didn’t include that column.
 
 ``` r
-
 df1 <- tibble::tribble(
   ~ x, ~y, 
   1, "a",
@@ -175,7 +173,6 @@ dplyr::bind_rows(list(df1, df2))
 can lead to unexpected coercion of columns into undesirable formats.
 
 ``` r
-
 df1 <- tibble::tribble(
   ~ x, ~y, 
   "1", "a",
@@ -224,9 +221,8 @@ all files in a set, but the user might not be aware that in files 4 and
 
 In such an example, once the data is merged together, the absence of
 this information in certain files may be mistaken for a general
-‘low-level’ presence of missing observations in the variable in
-question (rather than complete absence of the measure for some
-datasets).
+‘low-level’ presence of missing observations in the variable in question
+(rather than complete absence of the measure for some datasets).
 
 This, in turn may lead to inappropriate analytic decisions (like
 treating `x` as missing at random, as opposed to missing from particular
@@ -235,7 +231,6 @@ calculate the mean of `x` for groups in which it was not measured at
 all).
 
 ``` r
-
 df1 <- tibble::tribble(
   ~ x, ~y, ~z,
   1, "a", 1,
@@ -350,7 +345,6 @@ following example builds a *scaffolding* dataframe from the contents of
 a directory on a local computer.
 
 ``` r
-
 data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/")
 ```
 
@@ -364,7 +358,6 @@ time-points, `toweR` provides two different options for recording this
 information:
 
 ``` r
-
 # We can use a regex applied to the filename
 data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/") %>%
   metadata_col_from_regex(list("timestamp" = "[some-expression]"))
@@ -408,8 +401,7 @@ metadata to check the coverage of your files:
     you supply the start and end dates for your data and the function
     checks that there are no missing dates (e.g. months) among your data
     files.
-2.  `check_numeric_range(scaffold_df, start, end, interval,
-    metadata_col)`
+2.  `check_numeric_range(scaffold_df, start, end, interval, metadata_col)`
 3.  `check_explicit(scaffold_df, expected_values, metadata_col)` check
     that the set of values in the chosen metadata column is the same as
     `expected_values`.
@@ -428,7 +420,6 @@ Now that we’ve build our scaffolding df, we will load our data. The data
 is loaded as a list-column of the scaffolding (one dataframe per-row).
 
 ``` r
-
 data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/") %>%
   metadata_col_from_lookup(tibble::tribble(
     ~filename, ~timestamp,
@@ -445,7 +436,6 @@ data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/") %>%
 ##### Controlling Linestart
 
 ``` r
-
 data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/") %>%
   metadata_col_from_lookup(tibble::tribble(
     ~filename, ~timestamp,
@@ -459,7 +449,6 @@ data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/") %>%
 ```
 
 ``` r
-
 data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/") %>%
   metadata_col_from_lookup(tibble::tribble(
     ~filename, ~timestamp,
@@ -476,7 +465,6 @@ data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/") %>%
 ##### Controlling Sheet Selection
 
 ``` r
-
 data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/") %>%
   metadata_col_from_lookup(tibble::tribble(
     ~filename, ~timestamp,
@@ -497,7 +485,6 @@ data_scaffold <- build_scaffolding_from_dir("R:/Data/Quartely-Datasets/") %>%
 ### Harmonise Column Names
 
 ``` r
-
 data_scaffold %>%
   # renames all columns (in all datasets) that match expression with the output name
   harmonise_matching_to_colname(., pattern = "age", shared_colname = "age_of_participant") %>%
@@ -520,7 +507,6 @@ data_scaffold %>%
 ### Harmonise Column Types
 
 ``` r
-
 data_scaffold %>%
   # Safely as true throws an error if any values are coerced to NA, and 
   # provides information on the location of the issue
@@ -541,7 +527,6 @@ data_scaffold %>%
 ## Building the Tower (vertical join)
 
 ``` r
-
 final_df <- data_scaffold %>%
   vertical_merge(
     .,
@@ -578,7 +563,7 @@ final_df <- data_scaffold %>%
 ## Adjust and Repeat
 
 A key part of the logic of the `toweR` work-flow is that the user doesnt
-have to get all of the steps above right initially\! Have a go and learn
+have to get all of the steps above right initially! Have a go and learn
 about your data, and then use the diagnostics (both at the final step,
 and in the intermediary operations) to iteratively refine your approach
 until you have a clean pipeline that produces a well-harmonized
