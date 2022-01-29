@@ -7,6 +7,11 @@
 
 [![R-CMD-check](https://github.com/ltdroy/toweR/workflows/R-CMD-check/badge.svg)](https://github.com/ltdroy/toweR/actions)
 [![test-coverage](https://github.com/ltdroy/toweR/workflows/test-coverage/badge.svg)](https://github.com/ltdroy/toweR/actions)
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://choosealicense.com/licenses/mit/)
+[![codecov](https://codecov.io/gh/ltdroy/toweR/branch/master/graph/badge.svg)](https://codecov.io/gh/ltdroy/toweR)
 <!-- badges: end -->
 
 STILL IN DEVELOPMENT - NOT FOR USE
