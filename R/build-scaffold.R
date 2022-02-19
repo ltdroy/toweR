@@ -1,0 +1,114 @@
+#' Build a data scaffold (tibble) from the contents of a directory
+#'
+#' @param dir_path File directory path (string)
+#' @param file_exts If NULL, all files in the directory as included in the scaffold,
+#' otherwise, if a character vector is supplied, all files with matching extensions (e.g. 'csv')
+#' are included. Any non-alphanumeric characters will be removed (e.g. '.csv' will become 'csv')
+#' to match with the extracted file extension.
+#' @param verbose If TRUE, prints list of the files added
+#'
+#' @return A data.frame/tibble with one row per-file, and columns with file metadata:
+#'
+#' 1. filename - Name of the file
+#' 2. filepath - Path to the file
+#' 3. file_ext - File extension (e.g. .csv)
+#'
+#' @export
+#'
+#' @examples
+build_scaffolding_from_dir <- function(dir_path,
+                                       file_exts = NULL,
+                                       verbose = FALSE){
+
+  assertthat::assert_that(
+    is.character(dir_path),
+    length(dir_path) == 1,
+    msg = "Expected dir_path to be a string of length 1"
+  )
+
+  assertthat::assert_that(
+    fs::dir_exists(dir_path),
+    msg = "dir_path doesn't seem to exist on the file-system"
+  )
+
+  assertthat::assert_that(
+    is.character(file_exts) | is.null(file_exts),
+    msg = "Expected file_exts to be a string or NULL"
+  )
+
+  initial_scaffold <- fs::dir_info(dir_path)
+
+  initial_scaffold[["file_ext"]] <- fs::path_ext(initial_scaffold[["path"]])
+
+  if(!is.null(file_exts)){
+
+    file_exts <- string_alphanum_only(file_exts)
+
+    initial_scaffold <- initial_scaffold %>%
+      dplyr::filter(
+        file_ext %in% file_exts
+      )
+
+  }
+
+  initial_scaffold[["filepath"]] <- initial_scaffold[["path"]]
+
+  initial_scaffold[["filename"]] <- fs::path_file(initial_scaffold[["path"]])
+
+
+  initial_scaffold <- initial_scaffold %>%
+    dplyr::select(
+      filename,
+      filepath,
+      file_ext
+    )
+
+  if(isTRUE(verbose)){
+
+    message(
+      paste0(
+        "Metadata loaded for files:\n\n",
+        paste0(
+          seq_len(nrow(initial_scaffold)), ". ",
+          initial_scaffold[["filename"]],
+          collapse = ",\n"
+        )
+      )
+    )
+
+  }
+
+  return(initial_scaffold)
+
+}
+
+#' Remove any non-alphanumeric characters from a character vector
+#'
+#' @param x A character vector
+#'
+#' @return x with all instances of non-alphanumeric character replaced
+#'  with an empty character
+#'
+#' @examples
+string_alphanum_only <- function(x){
+
+  assertthat::assert_that(
+    is.character(x),
+    msg = "Expected x to be a character vector"
+  )
+
+
+  y <- stringr::str_replace_all(
+    x,
+    pattern = "[^[:alnum:]]",
+    replacement = ""
+  )
+
+  assertthat::assert_that(
+    all(is.na(y) == is.na(x)),
+    msg = "Unexpected NA mismatch created by string_alphanum_only()"
+  )
+
+  return(y)
+
+}

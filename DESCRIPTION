@@ -18,6 +18,10 @@ Imports:
     tibble,
     lubridate,
     dplyr,
-    covr
+    covr,
+    fs,
+    stringr,
+    purrr,
+    magrittr
 URL: https://github.com/ltdroy/toweR
 BugReports: https://github.com/ltdroy/toweR/issues
