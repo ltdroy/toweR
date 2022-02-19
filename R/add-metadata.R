@@ -265,3 +265,104 @@ safe_left_join <- function(df_l, df_r, by){
   return(df_output)
 
 }
+
+#' Add a default line-start value to the scaffold data-frame
+#' in preparation for loading the data into R
+#'
+#' @param scaffold_df A tibble/data.frame containing columns:
+#'
+#' 1. filename - Name of the file
+#' 2. filepath - Path to the file
+#' 3. file_ext - File extension (e.g. .csv)
+#'
+#' @param default A number or string to use as the default line-start
+#' value for each file
+#'
+#' @return
+#' @export
+#'
+#' @examples
+add_linestarts <- function(scaffold_df, default = 1){
+
+  assertthat::assert_that(
+    is_file_scaffold(scaffold_df)
+  )
+
+  assertthat::assert_that(
+    is.numeric(default) | is.character(default),
+    msg = "Expected default to be a character or numeric vector"
+  )
+
+  # Add line-starts as a list column
+  scaffold_df[["linestart"]] <- default %>% purrr::map(., ~ .x)
+
+  return(scaffold_df)
+
+}
+
+#' Add a default line-start value to the scaffold data-frame
+#' in preparation for loading the data into R
+#'
+#' @param scaffold_df A tibble/data.frame containing columns:
+#'
+#' 1. filename - Name of the file
+#' 2. filepath - Path to the file
+#' 3. file_ext - File extension (e.g. .csv)
+#' @param meta_col A string, the name of the meta column to use to identify
+#' files whose meta-data should be changed
+#' @param meta_values Rows matching these values will replace their linestart value with `new_linestart`
+#' @param new_linestart A number or string
+#'
+#' @return
+#' @export
+#'
+#' @examples
+modify_linestarts <- function(scaffold_df, meta_col = "filename", meta_values, new_linestart){
+
+  assertthat::assert_that(
+    is_file_scaffold(scaffold_df)
+  )
+
+  assertthat::assert_that(
+    is.character(meta_col),
+    length(meta_col) == 1,
+    msg = "Expected meta_col to be a character vector of length 1"
+  )
+
+  assertthat::assert_that(
+    meta_col %in% names(scaffold_df),
+    msg = paste(meta_col, "is not one of the columns of the scaffold_df")
+  )
+
+  assertthat::assert_that(
+    isTRUE(all(meta_values %in% scaffold_df[[meta_col]])),
+    msg = paste("One or more meta_values are not the", meta_col, "column")
+  )
+
+  scaffold_df[["linestart"]][ scaffold_df[[meta_col]] %in% meta_values ] <- new_linestart
+
+  return(scaffold_df)
+
+}
+
+add_sheet_selections <- function(scaffold_df, default = 1, load_all_sheets = FALSE){
+
+  assertthat::assert_that(
+    is_file_scaffold(scaffold_df)
+  )
+
+  assertthat::assert_that(
+    is.numeric(default) | is.character(default),
+    msg = "Expected defailt to be a character vector or numeric vector"
+  )
+
+  if(isTRUE(load_all_sheets)){
+
+    scaffold_df[["sheet_selection"]] <- NA
+
+    return(scaffold_df)
+
+  }
+
+
+}
