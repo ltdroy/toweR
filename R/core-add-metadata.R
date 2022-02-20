@@ -17,6 +17,8 @@
 #' @examples
 metadata_col_from_regex <- function(scaffold_df, regex_list){
 
+  # Input checking
+
   assertthat::assert_that(
     is_file_scaffold(scaffold_df)
   )
@@ -49,6 +51,7 @@ metadata_col_from_regex <- function(scaffold_df, regex_list){
     msg = "Cannot use metadata_col_from_regex() to override the core file scaffold columns:\n filename, filepath, file_ext"
   )
 
+
   if(length(intersect(
     names(regex_list),
     names(scaffold_df)
@@ -67,7 +70,9 @@ metadata_col_from_regex <- function(scaffold_df, regex_list){
 
   }
 
-  newcolumn_df <- purrr::map_dfc(
+  # Substantive Code
+
+  new_metadata_df <- purrr::map_dfc(
     regex_list,
     function(user_pattern){
       stringr::str_extract(scaffold_df[["filename"]], pattern = user_pattern)
@@ -76,12 +81,16 @@ metadata_col_from_regex <- function(scaffold_df, regex_list){
 
   scaffold_df_final <- dplyr::bind_cols(scaffold_df, newcolumn_df)
 
+  # Output checks
+
   assertthat::assert_that(
     is.data.frame(scaffold_df),
     nrow(scaffold_df_final) == nrow(scaffold_df),
     ncol(scaffold_df_final) == ncol(scaffold_df) + ncol(newcolumn_df),
     msg = "Error in constructing updated file scaffold"
   )
+
+  # Return
 
   return(scaffold_df_final)
 
@@ -112,8 +121,7 @@ metadata_col_from_lookup <- function(scaffold_df, lookup_list){
   )
 
   assertthat::assert_that(
-    is.list(lookup_list),
-    msg = "lookup_list was expected to be a list of dataframes (place a single df in list())"
+    is.list(lookup_list)
   )
 
   assertthat::assert_that(
@@ -232,40 +240,6 @@ metadata_col_from_lookup <- function(scaffold_df, lookup_list){
 
 }
 
-#' Perform left join defensively
-#'
-#' Will fail if:
-#'
-#' 1. Neither of the dfs have a unique `by` key
-#' 2. The rowcount of the output df is not equal to
-#' the rowcount of the left-hand df
-#'
-#' @param df_l Left-hand df
-#' @param df_r Right hand df
-#' @param by String, name of the key column
-#'
-#' @return A df of `df_r` left joined into `df_l`
-#'
-#' @examples
-safe_left_join <- function(df_l, df_r, by){
-
-  assertthat::assert_that(
-    length(unique(df_l[[by]])) == nrow(df_l) | length(unique(df_r[[by]])) == nrow(df_r)
-  )
-
-  df_output <- dplyr::left_join(
-    df_l, df_r, by = by,
-    na_matches = c("never")
-  )
-
-  assertthat::assert_that(
-    nrow(df_output) == nrow(df_l)
-  )
-
-  return(df_output)
-
-}
-
 #' Add a default line-start value to the scaffold data-frame
 #' in preparation for loading the data into R
 #'
@@ -275,8 +249,7 @@ safe_left_join <- function(df_l, df_r, by){
 #' 2. filepath - Path to the file
 #' 3. file_ext - File extension (e.g. .csv)
 #'
-#' @param default A number or string to use as the default line-start
-#' value for each file
+#' @param default A number, the row to begin reading the file from
 #'
 #' @return
 #' @export
@@ -289,12 +262,13 @@ add_linestarts <- function(scaffold_df, default = 1){
   )
 
   assertthat::assert_that(
-    is.numeric(default) | is.character(default),
+    is.numeric(default),
+    length(default),
     msg = "Expected default to be a character or numeric vector"
   )
 
   # Add line-starts as a list column
-  scaffold_df[["linestart"]] <- default %>% purrr::map(., ~ .x)
+  scaffold_df[["linestart"]] <- default
 
   return(scaffold_df)
 
@@ -308,6 +282,7 @@ add_linestarts <- function(scaffold_df, default = 1){
 #' 1. filename - Name of the file
 #' 2. filepath - Path to the file
 #' 3. file_ext - File extension (e.g. .csv)
+#'
 #' @param meta_col A string, the name of the meta column to use to identify
 #' files whose meta-data should be changed
 #' @param meta_values Rows matching these values will replace their linestart value with `new_linestart`
@@ -345,6 +320,21 @@ modify_linestarts <- function(scaffold_df, meta_col = "filename", meta_values, n
 
 }
 
+#' Add a default line-start value to the scaffold data-frame
+#'
+#' @param scaffold_df A tibble/data.frame containing columns:
+#'
+#' 1. filename - Name of the file
+#' 2. filepath - Path to the file
+#' 3. file_ext - File extension (e.g. .csv)
+#'
+#' @param default A number or string
+#' @param load_all_sheets
+#'
+#' @return
+#' @export
+#'
+#' @examples
 add_sheet_selections <- function(scaffold_df, default = 1, load_all_sheets = FALSE){
 
   assertthat::assert_that(
@@ -353,7 +343,7 @@ add_sheet_selections <- function(scaffold_df, default = 1, load_all_sheets = FAL
 
   assertthat::assert_that(
     is.numeric(default) | is.character(default),
-    msg = "Expected defailt to be a character vector or numeric vector"
+    msg = "Expected default to be a character vector or numeric vector"
   )
 
   if(isTRUE(load_all_sheets)){
@@ -363,6 +353,5 @@ add_sheet_selections <- function(scaffold_df, default = 1, load_all_sheets = FAL
     return(scaffold_df)
 
   }
-
 
 }

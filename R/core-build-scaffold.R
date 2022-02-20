@@ -20,6 +20,7 @@ build_scaffolding_from_dir <- function(dir_path,
                                        file_exts = NULL,
                                        verbose = FALSE){
 
+
   assertthat::assert_that(
     is.character(dir_path),
     length(dir_path) == 1,
@@ -79,36 +80,5 @@ build_scaffolding_from_dir <- function(dir_path,
   }
 
   return(initial_scaffold)
-
-}
-
-#' Remove any non-alphanumeric characters from a character vector
-#'
-#' @param x A character vector
-#'
-#' @return x with all instances of non-alphanumeric character replaced
-#'  with an empty character
-#'
-#' @examples
-string_alphanum_only <- function(x){
-
-  assertthat::assert_that(
-    is.character(x),
-    msg = "Expected x to be a character vector"
-  )
-
-
-  y <- stringr::str_replace_all(
-    x,
-    pattern = "[^[:alnum:]]",
-    replacement = ""
-  )
-
-  assertthat::assert_that(
-    all(is.na(y) == is.na(x)),
-    msg = "Unexpected NA mismatch created by string_alphanum_only()"
-  )
-
-  return(y)
 
 }
