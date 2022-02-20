@@ -335,7 +335,7 @@ modify_linestarts <- function(scaffold_df, meta_col = "filename", meta_values, n
 #' @export
 #'
 #' @examples
-add_sheet_selections <- function(scaffold_df, default = 1, load_all_sheets = FALSE){
+add_sheet_selections <- function(scaffold_df, default = 1){
 
   assertthat::assert_that(
     is_file_scaffold(scaffold_df)
@@ -343,15 +343,12 @@ add_sheet_selections <- function(scaffold_df, default = 1, load_all_sheets = FAL
 
   assertthat::assert_that(
     is.numeric(default) | is.character(default),
+    length(default) == 1,
     msg = "Expected default to be a character vector or numeric vector"
   )
 
-  if(isTRUE(load_all_sheets)){
+  scaffold_df[["sheet_selection"]] <- default
 
-    scaffold_df[["sheet_selection"]] <- NA
-
-    return(scaffold_df)
-
-  }
+  return(scaffold_df)
 
 }
