@@ -77,6 +77,10 @@ testthat::test_that(
       eval_coltype_diagnostics(attr(tower_df_minimal, "diagnostics")[[2]], tower_df = tower_df_minimal)
     )
 
+    testthat::expect_false(
+      eval_coltype_diagnostics(attr(tower_df_minimal, "diagnostics")[[3]], tower_df = tower_df_minimal)
+    )
+
   }
 )
 
