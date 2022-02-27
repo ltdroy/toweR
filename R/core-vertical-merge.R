@@ -1,22 +1,7 @@
 #' Vertically merge a set of data bricks
 #'
-#' @param data_bricks Set of data bricks:
-#' A tibble with a list column called `data_brick` which contains
-#' dataframes to be merged vertically. Typically this tibble
-#' is the output of a call to 'build_tower()'.
-#' @param diagnostics This can either be a logical (TRUE/FALSE)
-#' or it can be a character vector listing the diagnostics to be performed:
-#' TRUE - perform all diagnostics
-#' FALSE - perform no diagnostics
-#' Character vector:
-#' 1. 'names' - provides warnings about missing/inconsistent column names,
-#' and fails if explicit 'selections' are provided and one of these selections is
-#' missing from all datasets
-#' 2. 'types' - provides a warning about any inconsistent types on shared variable names,
-#' this consistentencies are always resolved by converting the variable to character in the final dataset
-#' 3. 'missingness' - provides a warning about unusual patterns of missingness of selected variables in one or more files
-#' 4. 'coverage' - (only applied if the coverage parameter is supplied), checks that the metadata in the `tower_blocks` object
-#' provides full coverage of the expected values (see coverage).
+#' @param scaffold_df
+#' @param diagnostics TRUE/FALSE
 #' @param keep_diagnostics TRUE/FALSE. Should diagnostic summary information be stored as an attribute of the output dataset,
 #' which can be viewed, or extracted wholesale, using `get_tower_diagnostics()`
 #' @param add_metadata TRUE/FALSE/character vector:
@@ -26,13 +11,7 @@
 #' @param selections TRUE/character vector:
 #' 1. TRUE - Select all columns in all data bricks
 #' 2. character vector - take the named columns from each data brick (where available)
-#' @param coverage A list of named character vectors, this list should follow
-#' a pattern of:
-#' list("metadata_column" = c(expected_values))
-#' Essentially this faccilitates a diagnostic check that the metadata column
-#' contains all the values listed in expected values.
-#' A helper function `generate_time_sequence()` can be used to
-#' build a time or time-date vector to check coverage of time-stamped files.
+#' @param quiet TRUE/FALSE
 #' @return
 #' A tibble/dataframe that contains a vertical merger of all of the dataframes in the supplied data_brick
 #' object. Optionally, it contains attributes:
@@ -44,13 +23,157 @@
 #'
 #' @examples
 vertical_merge <- function(
-  data_bricks,
+  scaffold_df,
   selections = TRUE,
   diagnostics = TRUE,
   keep_diagnostics = FALSE,
   add_metadata = TRUE,
-  coverage = NULL) {
+  coverage = NULL,
+  quiet = FALSE) {
 
-  return(1)
+  assertthat::assert_that(
+    is_file_scaffold(scaffold_df),
+    "datasets" %in% names(scaffold_df)
+  )
+
+  assertthat::assert_that(
+    isTRUE(
+      all(
+        purrr::map_lgl(scaffold_df[["datasets"]],
+                       ~ is.data.frame(.x)
+                       )
+      )
+    ),
+    msg = "At-least one of the dataset objects in scaffold_df is not a data.frame"
+  )
+
+  scaffold_df[["dfs_processed"]] <- purrr::map(
+    scaffold_df[["datasets"]],
+    ~ .x
+  )
+
+
+  scaffold_df <- apply_selections(scaffold_df, selections = selections)
+  scaffold_df <- include_metadata(scaffold_df, add_metadata = add_metadata)
+
+  tower_df <- dplyr::bind_rows(
+    scaffold_df[["dfs_processed"]] %>%
+      purrr::set_names(scaffold_df[["filename"]])
+  )
+
+  diagnostics_list <- run_diagnostics(
+    scaffold_df,
+    tower_df,
+    diagnostics
+  )
+
+  if(!isTRUE(quiet)){
+    message(
+      build_diagnostic_quick_summary(
+        diagnostics_list = diagnostics_list,
+        tower_df= tower_df)
+    )
+  }
+
+  if(isTRUE(keep_diagnostics)){
+
+    attr(tower_df, "diagnostics") <- diagnostics_list
+
+  }
+
+  return(tower_df)
+
+}
+
+apply_selections <- function(scaffold_df,
+                             selections){
+
+  if(isTRUE(selections)){
+
+    return(scaffold_df)
+
+  } else {
+
+    if(is.character(selections)){
+
+      scaffold_df[["dfs_processed"]] <- purrr::map(
+        scaffold_df[["dfs_processed"]],
+        ~ .x[names(.x) %in% selections]
+      )
+
+      return(scaffold_df)
+
+    } else {
+
+      warning("Unrecognised value of 'selections', ",
+              "should be TRUE or character vector.\n",
+              "All columns retained.")
+
+      return(scaffold_df)
+
+    }
+
+  }
+
+}
+
+include_metadata <- function(scaffold_df,
+                             add_metadata) {
+
+  # Add metadata if needed
+  if(isTRUE(add_metadata)){
+
+    scaffold_df[["dfs_processed"]] <- purrr::pmap(
+      scaffold_df,
+      function(...){
+        scaffold_row <- tibble::tibble(...)
+        cbind(
+          scaffold_row[["dfs_processed"]],
+          scaffold_row[
+            purrr::map_lgl(
+              scaffold_row, ~ !is.list(.x)
+            )
+          ]
+        )
+      }
+    )
+
+  } else {
+
+    if(is.character(add_metadata)){
+
+      assertthat::assert_that(
+        all(add_metadata %in% names(scaffold_df)),
+        !("dfs_processed" %in% add_metadata)
+      )
+
+      scaffold_df[["dfs_processed"]] <- purrr::pmap(
+        scaffold_df,
+        function(...){
+          scaffold_row <- tibble::tibble(...)
+          cbind(
+            scaffold_row[["dfs_processed"]],
+            scaffold_row[add_metadata]
+          )
+        }
+      )
+
+    } else {
+
+      scaffold_df[["dfs_processed"]] <- scaffold_df[["dfs_processed"]]
+
+      if(!isFALSE(add_metadata)){
+
+        warning("Unrecognised value of add_metadata ",
+                "(should be TRUE, FALSE, or vector of column names).\n",
+                "No metadata added. ")
+
+      }
+
+    }
+
+  }
+
+  return(scaffold_df)
 
 }
