@@ -1,3 +1,13 @@
+#' check_metadata_coverage
+#'
+#' @param scaffold_df
+#' @param meta_col
+#' @param expected_values
+#'
+#' @return
+#' @export
+#'
+#' @examples
 check_metadata_coverage <- function(scaffold_df, meta_col, expected_values){
 
   assertthat::assert_that(

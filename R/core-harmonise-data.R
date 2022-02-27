@@ -1,3 +1,13 @@
+#' harmonise_by_explicit
+#'
+#' @param scaffold_df
+#' @param capture_list
+#' @param verbose
+#'
+#' @return
+#' @export
+#'
+#' @examples
 harmonise_by_explicit <- function(scaffold_df, capture_list, verbose = TRUE){
 
   assertthat::assert_that(
@@ -19,6 +29,16 @@ harmonise_by_explicit <- function(scaffold_df, capture_list, verbose = TRUE){
 
 }
 
+#' rename_cols_by_capture_list
+#'
+#' @param df
+#' @param df_name
+#' @param capture_list
+#' @param verbose
+#'
+#' @return
+#'
+#' @examples
 rename_cols_by_capture_list <- function(df, df_name, capture_list, verbose){
 
   for(group_name in names(capture_list)){

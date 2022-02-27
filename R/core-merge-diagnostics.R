@@ -1,3 +1,13 @@
+#' run_diagnostics
+#'
+#' @param scaffold_df
+#' @param tower_df
+#' @param diagnostics
+#'
+#' @return
+#' @export
+#'
+#' @examples
 run_diagnostics <- function(scaffold_df,
                             tower_df,
                             diagnostics){
@@ -15,6 +25,14 @@ run_diagnostics <- function(scaffold_df,
 
 }
 
+#' build_diagnostic_quick_summary
+#'
+#' @param diagnostics_list
+#' @param tower_df
+#'
+#' @return
+#'
+#' @examples
 build_diagnostic_quick_summary <- function(diagnostics_list, tower_df){
 
   quick_class <- function(x){
@@ -42,6 +60,15 @@ build_diagnostic_quick_summary <- function(diagnostics_list, tower_df){
 
 }
 
+#' eval_missingness_diagnostics
+#'
+#' @param diag_ob
+#' @param tower_df
+#'
+#' @return
+#' @export
+#'
+#' @examples
 eval_missingness_diagnostics <- function(diag_ob, tower_df){
 
   diag_ob %>%
@@ -63,6 +90,15 @@ eval_missingness_diagnostics <- function(diag_ob, tower_df){
 
 }
 
+#' eval_coltype_diagnostics
+#'
+#' @param diag_ob
+#' @param tower_df
+#'
+#' @return
+#' @export
+#'
+#' @examples
 eval_coltype_diagnostics <- function(diag_ob, tower_df){
 
   diag_ob %>%
@@ -84,6 +120,15 @@ eval_coltype_diagnostics <- function(diag_ob, tower_df){
 
 }
 
+#' eval_colname_diagnostics
+#'
+#' @param diag_ob
+#' @param tower_df
+#'
+#' @return
+#' @export
+#'
+#' @examples
 eval_colname_diagnostics <- function(diag_ob, tower_df){
 
   diag_ob %>%
@@ -105,6 +150,14 @@ eval_colname_diagnostics <- function(diag_ob, tower_df){
 
 }
 
+#' run_missingness_diagnostics
+#'
+#' @param scaffold_df
+#' @param tower_df
+#'
+#' @return
+#'
+#' @examples
 run_missingness_diagnostics <- function(scaffold_df, tower_df){
 
   tidyr::expand_grid(
@@ -135,6 +188,14 @@ run_missingness_diagnostics <- function(scaffold_df, tower_df){
 
 }
 
+#' run_colname_diagnostics
+#'
+#' @param scaffold_df
+#' @param tower_df
+#'
+#' @return
+#'
+#' @examples
 run_colname_diagnostics <- function(scaffold_df, tower_df){
 
   tidyr::expand_grid(
@@ -162,6 +223,14 @@ run_colname_diagnostics <- function(scaffold_df, tower_df){
 
 }
 
+#' run_coltype_diagnostics
+#'
+#' @param scaffold_df
+#' @param tower_df
+#'
+#' @return
+#'
+#' @examples
 run_coltype_diagnostics <- function(scaffold_df, tower_df){
 
   tidyr::expand_grid(
@@ -192,6 +261,14 @@ run_coltype_diagnostics <- function(scaffold_df, tower_df){
 
 }
 
+#' classify_column_basic
+#'
+#' @param colname
+#' @param df
+#'
+#' @return
+#'
+#' @examples
 classify_column_basic <- function(colname, df){
 
   dplyr::case_when(
@@ -205,6 +282,14 @@ classify_column_basic <- function(colname, df){
 
 }
 
+#' missingness_col_basic
+#'
+#' @param colname
+#' @param df
+#'
+#' @return
+#'
+#' @examples
 missingness_col_basic <- function(colname, df){
 
   dplyr::case_when(

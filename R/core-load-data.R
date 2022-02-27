@@ -1,3 +1,11 @@
+#' load_materials_simple
+#'
+#' @param scaffold_df
+#'
+#' @return
+#' @export
+#'
+#' @examples
 load_materials_simple <- function(scaffold_df){
 
   # Runtime assertions
@@ -36,6 +44,13 @@ load_materials_simple <- function(scaffold_df){
 
 }
 
+#' simple_read_switch
+#'
+#' @param scaffold_row
+#'
+#' @return
+#'
+#' @examples
 simple_read_switch <- function(scaffold_row){
 
   if(scaffold_row[["file_ext"]] == "csv"){
@@ -53,6 +68,13 @@ simple_read_switch <- function(scaffold_row){
 
 }
 
+#' read_helper_csv
+#'
+#' @param scaffold_row
+#'
+#' @return
+#'
+#' @examples
 read_helper_csv <- function(scaffold_row){
 
   if(!("linestart") %in% names(scaffold_row)){
@@ -75,6 +97,13 @@ read_helper_csv <- function(scaffold_row){
 
 }
 
+#' read_helper_xlsx
+#'
+#' @param scaffold_row
+#'
+#' @return
+#'
+#' @examples
 read_helper_xlsx <- function(scaffold_row){
 
   if(!("linestart") %in% names(scaffold_row)){
