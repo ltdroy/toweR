@@ -7,10 +7,11 @@
 simple_read_switch(scaffold_row)
 }
 \arguments{
-\item{scaffold_row}{}
+\item{scaffold_row}{A row of a \code{scaffold_df} dataframe}
 }
 \value{
-
+A dataframe loaded via read_helper_csv
+or read_helper_xlsx
 }
 \description{
 simple_read_switch

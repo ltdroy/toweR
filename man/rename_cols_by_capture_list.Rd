@@ -7,10 +7,18 @@
 rename_cols_by_capture_list(df, df_name, capture_list, verbose)
 }
 \arguments{
-\item{verbose}{}
+\item{df}{A dataframe}
+
+\item{df_name}{string, a label for the dataframe}
+
+\item{capture_list}{A named list of character vectors, where the name of each
+list item is a harmonised column name to use, and values in each character
+vector are existing column names to convert to this name.}
+
+\item{verbose}{report changes to the console?}
 }
 \value{
-
+\code{df} with renamed column names according to \code{capture_list}
 }
 \description{
 rename_cols_by_capture_list

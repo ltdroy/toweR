@@ -7,23 +7,29 @@
 build_scaffolding_from_dir(dir_path, file_exts = NULL, verbose = FALSE)
 }
 \arguments{
-\item{dir_path}{File directory path (string)}
+\item{dir_path}{File directory path (string).}
 
-\item{file_exts}{If NULL, all files in the directory as included in the scaffold,
+\item{file_exts}{If NULL (default), all files in the directory are included in the scaffold,
 otherwise, if a character vector is supplied, all files with matching extensions (e.g. 'csv')
 are included. Any non-alphanumeric characters will be removed (e.g. '.csv' will become 'csv')
 to match with the extracted file extension.}
 
-\item{verbose}{If TRUE, prints list of the files added}
+\item{verbose}{If TRUE (default: FALSE), reports a list of the files added to the console.}
 }
 \value{
-A data.frame/tibble with one row per-file, and columns with file metadata:
+A data.frame/tibble with one row per-file in the directory, and columns with file metadata:
 \enumerate{
 \item filename - Name of the file
 \item filepath - Path to the file
-\item file_ext - File extension (e.g. .csv)
+\item file_ext - File extension (e.g. 'csv')
 }
 }
 \description{
 Build a data scaffold (tibble) from the contents of a directory
+}
+\examples{
+
+\dontrun{
+ build_scaffolding_from_dir(dir_path = "raw_data/csv_files/")
+}
 }

@@ -1,21 +1,25 @@
 #' Build a data scaffold (tibble) from the contents of a directory
 #'
-#' @param dir_path File directory path (string)
-#' @param file_exts If NULL, all files in the directory as included in the scaffold,
+#' @param dir_path File directory path (string).
+#' @param file_exts If NULL (default), all files in the directory are included in the scaffold,
 #' otherwise, if a character vector is supplied, all files with matching extensions (e.g. 'csv')
 #' are included. Any non-alphanumeric characters will be removed (e.g. '.csv' will become 'csv')
 #' to match with the extracted file extension.
-#' @param verbose If TRUE, prints list of the files added
+#' @param verbose If TRUE (default: FALSE), reports a list of the files added to the console.
 #'
-#' @return A data.frame/tibble with one row per-file, and columns with file metadata:
+#' @return A data.frame/tibble with one row per-file in the directory, and columns with file metadata:
 #'
 #' 1. filename - Name of the file
 #' 2. filepath - Path to the file
-#' 3. file_ext - File extension (e.g. .csv)
+#' 3. file_ext - File extension (e.g. 'csv')
 #'
 #' @export
 #'
 #' @examples
+#'
+#' \dontrun{
+#'  build_scaffolding_from_dir(dir_path = "raw_data/csv_files/")
+#' }
 build_scaffolding_from_dir <- function(dir_path,
                                        file_exts = NULL,
                                        verbose = FALSE){
@@ -24,17 +28,8 @@ build_scaffolding_from_dir <- function(dir_path,
   assertthat::assert_that(
     is.character(dir_path),
     length(dir_path) == 1,
-    msg = "Expected dir_path to be a string of length 1"
-  )
-
-  assertthat::assert_that(
     fs::dir_exists(dir_path),
-    msg = "dir_path doesn't seem to exist on the file-system"
-  )
-
-  assertthat::assert_that(
-    is.character(file_exts) | is.null(file_exts),
-    msg = "Expected file_exts to be a string or NULL"
+    is.character(file_exts) | is.null(file_exts)
   )
 
   initial_scaffold <- fs::dir_info(dir_path)

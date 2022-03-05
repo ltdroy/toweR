@@ -13,14 +13,34 @@ add_linestarts(scaffold_df, default = 1)
 \item filename - Name of the file
 \item filepath - Path to the file
 \item file_ext - File extension (e.g. .csv)
-}}
+}
 
-\item{default}{A number, the row to begin reading the file from}
+And any other columns required by the function.}
+
+\item{default}{Default value to use (added to all rows)}
 }
 \value{
-
+\code{scaffold_df} with an additional column indicating
+the line to start reading the data from
 }
 \description{
 Add a default line-start value to the scaffold data-frame
 in preparation for loading the data into R
+}
+\examples{
+
+library(magrittr)
+
+tibble::tibble(
+  filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+  filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+  file_ext = c("csv", "csv", "csv")
+) \%>\%
+ metadata_col_from_regex(
+   scaffold_df = .,
+   regex_list = list(
+     "seminar_series" = "\\\\d\\\\d\\\\d"
+   )
+ ) \%>\%
+ add_linestarts(default = 1)
 }

@@ -7,50 +7,76 @@
 #' 2. filepath - Path to the file
 #' 3. file_ext - File extension (e.g. .csv)
 #'
+#' And any other columns required by the function.
+#'
 #' @param regex_list A named list of strings, with the names corresponding
 #' to the new columns to be created, and the strings representing
-#' regex patterns used to extract information from the filename column.
+#' regex patterns used to extract information from the source column.
+#' @param source_column A string of length 1 (default: 'filename'), the name of a
+#' column in the dataset from which values are extracted using the supplied regex.
 #'
 #' @return `scaffold_df` with additional columns created by applying `regex_list`
 #' @export
 #'
 #' @examples
-metadata_col_from_regex <- function(scaffold_df, regex_list){
+#'
+#' library(magrittr)
+#'
+#' tibble::tibble(
+#'   filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'   filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+#'   file_ext = c("csv", "csv", "csv")
+#' ) %>%
+#'  metadata_col_from_regex(
+#'    scaffold_df = .,
+#'    regex_list = list(
+#'      "seminar_series" = "\\d\\d\\d"
+#'    )
+#'  )
+#'
+metadata_col_from_regex <- function(scaffold_df,
+                                    regex_list,
+                                    source_column = "filename"){
 
   # Input checking
 
   assertthat::assert_that(
-    is_file_scaffold(scaffold_df)
-  )
-
-  assertthat::assert_that(
+    is_file_scaffold(scaffold_df),
     is.list(regex_list),
-    msg = "regex_list was expected to be a list"
-  )
-
-  assertthat::assert_that(
     length(names(regex_list)) == length(regex_list),
-    msg = "all regex_list items must be named"
+    source_column %in% names(scaffold_df)
+    )
+
+  list_contents_valid <- purrr::map_lgl(
+    regex_list, function(x){is.character(x) & length(x) == 1}
   )
 
   assertthat::assert_that(
     isTRUE(
       all(
-        purrr::map_lgl(
-          regex_list, function(x){is.character(x) & length(x) == 1}
-        )
+        list_contents_valid
       )
     ),
-    msg = "all regex_list items must be character vectors of length 1"
+    msg = paste0(
+      "Items: ",
+      paste0(seq_len(length(regex_list))[list_contents_valid], collapse = ", "),
+      "\n... are not character vectors of length 1."
+    )
   )
+
+  list_names_invalid <- names(regex_list) %in% c("filename", "filepath", "file_ext")
 
   assertthat::assert_that(
     isTRUE(
-      !any(names(regex_list) %in% c("filename", "filepath", "file_ext"))
+      !any(list_names_invalid)
     ),
-    msg = "Cannot use metadata_col_from_regex() to override the core file scaffold columns:\n filename, filepath, file_ext"
-  )
+    msg =
+      paste0(
+        "Cannot use metadata_col_from_regex() to override the core file scaffold columns:\n",
+        paste0(regex_list[list_names_invalid], collapse = ", ")
+      )
 
+  )
 
   if(length(intersect(
     names(regex_list),
@@ -75,7 +101,7 @@ metadata_col_from_regex <- function(scaffold_df, regex_list){
   new_metadata_df <- purrr::map_dfc(
     regex_list,
     function(user_pattern){
-      stringr::str_extract(scaffold_df[["filename"]], pattern = user_pattern)
+      stringr::str_extract(scaffold_df[[source_column]], pattern = user_pattern)
     }
   )
 
@@ -98,52 +124,79 @@ metadata_col_from_regex <- function(scaffold_df, regex_list){
 
 #' Add metadata columns to a scaffold using lookups that cover each filename
 #'
-#' @param scaffold_df A tibble/data.frame containing columns:
-#'
-#' 1. filename - Name of the file
-#' 2. filepath - Path to the file
-#' 3. file_ext - File extension (e.g. .csv)
-#'
+#' @inheritParams metadata_col_from_regex
 #' @param lookup_list A list of df/tibbles, all containing a column 'filename',
-#'   covering each of the filnames in `scaffold_df`, and additional columns
-#'   containing metadata corresponding to the files.
+#'   with each of the (unique) values of the filename column in `scaffold_df`,
+#'   and additional columns containing metadata corresponding to the files.
 #'   These lookups are joined into the scaffold_df by a left-join.
 #'
-#' @return `scaffold_df` with additional columns created by joining the lookups
+#' @return `scaffold_df` with additional columns created by joining-in the lookups
 #' contained in `lookup_list`
 #' @export
 #'
 #' @examples
+#'
+#' library(magrittr)
+#'
+#' # Metadata that you prepared in a spreadsheet (perhaps)
+#' series_lookup = tibble::tibble(
+#'                        filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'                        seminar_series = c("101", "201", "201"))
+#'
+#' tibble::tibble(
+#'   filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'   filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+#'   file_ext = c("csv", "csv", "csv")
+#' ) %>%
+#'  metadata_col_from_lookup(
+#'    scaffold_df = .,
+#'    lookup_list = list(
+#'      series_lookup
+#'    )
+#'  )
+#'
 metadata_col_from_lookup <- function(scaffold_df, lookup_list){
 
   assertthat::assert_that(
-    is_file_scaffold(scaffold_df)
-  )
-
-  assertthat::assert_that(
+    is_file_scaffold(scaffold_df),
     is.list(lookup_list)
   )
 
-  assertthat::assert_that(
-    isTRUE(
-      all(
-        purrr::map_lgl(
-          lookup_list, ~ is.data.frame(.x)
-        )
-      )
-    ),
-    msg = "Expected lookup_list to contain dataframes"
+  list_contents_are_df <- purrr::map_lgl(
+    lookup_list, ~ is.data.frame(.x)
   )
 
   assertthat::assert_that(
     isTRUE(
       all(
-        purrr::map_lgl(
-          lookup_list, ~ "filename" %in% names(.x)
-        )
+        list_contents_are_df
       )
     ),
-    msg = "All dataframes in lookup_list should have a filename column"
+    msg = paste0(
+      "These components of lookup_list are not dfs:",
+      paste0(seq_len(length(lookup_list))[list_contents_are_df],
+             collapse = ", "
+             )
+    )
+  )
+
+  list_contents_contain_fn_col <- purrr::map_lgl(
+    lookup_list, ~ "filename" %in% names(.x)
+  )
+
+  assertthat::assert_that(
+    isTRUE(
+      all(
+        list_contents_contain_fn_col
+      )
+    ),
+    msg = paste0(
+      "These components of lookup_list do not have a filename columnb
+      to use as a joining key:",
+      paste0(seq_len(length(lookup_list))[list_contents_contain_fn_col],
+             collapse = ", "
+             )
+    )
   )
 
   assertthat::assert_that(
@@ -151,18 +204,26 @@ metadata_col_from_lookup <- function(scaffold_df, lookup_list){
           lookup_list, ~ names(.x)
         ) %>%
         purrr::reduce(intersect)) == "filename") | length(lookup_list) == 1,
-    msg = "Only the column 'filename' can be repeated across multiple, filename lookups"
+    msg = "Only the column 'filename' can be repeated across multiple dfs in the lookup_list"
+  )
+
+  list_contents_fn_is_unique <-  purrr::map_lgl(
+    lookup_list, ~ length(unique(.x[["filename"]])) == nrow(.x)
   )
 
   assertthat::assert_that(
     isTRUE(
       all(
-        purrr::map_lgl(
-          lookup_list, ~ length(unique(.x[["filename"]])) == nrow(.x)
-        )
+        list_contents_fn_is_unique
       )
     ),
-    msg = "One (or more) of the lookups contains a duplicate filename"
+    msg = paste0(
+      "One (or more) of the lookups contains a duplicate filename.",
+      "\nSee items: ",
+      paste0(seq_len(length(lookup_list))[list_contents_fn_is_unique],
+             collapse = ", "
+      )
+    )
   )
 
   assertthat::assert_that(
@@ -243,27 +304,33 @@ metadata_col_from_lookup <- function(scaffold_df, lookup_list){
 #' Add a default line-start value to the scaffold data-frame
 #' in preparation for loading the data into R
 #'
-#' @param scaffold_df A tibble/data.frame containing columns:
+#' @inheritParams metadata_col_from_regex
+#' @param default Default value to use (added to all rows)
 #'
-#' 1. filename - Name of the file
-#' 2. filepath - Path to the file
-#' 3. file_ext - File extension (e.g. .csv)
-#'
-#' @param default A number, the row to begin reading the file from
-#'
-#' @return
+#' @return `scaffold_df` with an additional column indicating
+#' the line to start reading the data from
 #' @export
 #'
 #' @examples
+#'
+#' library(magrittr)
+#'
+#' tibble::tibble(
+#'   filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'   filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+#'   file_ext = c("csv", "csv", "csv")
+#' ) %>%
+#'  metadata_col_from_regex(
+#'    scaffold_df = .,
+#'    regex_list = list(
+#'      "seminar_series" = "\\d\\d\\d"
+#'    )
+#'  ) %>%
+#'  add_linestarts(default = 1)
 add_linestarts <- function(scaffold_df, default = 1){
 
- # browser()
-
   assertthat::assert_that(
-    is_file_scaffold(scaffold_df)
-  )
-
-  assertthat::assert_that(
+    is_file_scaffold(scaffold_df),
     is.numeric(default),
     length(default) == 1
   )
@@ -275,24 +342,38 @@ add_linestarts <- function(scaffold_df, default = 1){
 
 }
 
-#' Add a default line-start value to the scaffold data-frame
-#' in preparation for loading the data into R
+#' Modify the default linestart values for specific files
 #'
-#' @param scaffold_df A tibble/data.frame containing columns:
-#'
-#' 1. filename - Name of the file
-#' 2. filepath - Path to the file
-#' 3. file_ext - File extension (e.g. .csv)
-#'
+#' @inheritParams metadata_col_from_regex
 #' @param meta_col A string, the name of the meta column to use to identify
-#' files whose meta-data should be changed
-#' @param meta_values Rows matching these values will replace their linestart value with `new_linestart`
-#' @param new_linestart A number or string
+#' files whose default metadata will be changed
+#' @param meta_values Rows matching these values will replace their linestart/sheet_selection value with the new value`
+#' @param new_linestart A number, the index of the row to start reading the data from
 #'
 #' @return
 #' @export
 #'
 #' @examples
+#'
+#' library(magrittr)
+#'
+#' tibble::tibble(
+#'   filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'   filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+#'   file_ext = c("csv", "csv", "csv")
+#' ) %>%
+#'  metadata_col_from_regex(
+#'    scaffold_df = .,
+#'    regex_list = list(
+#'      "seminar_series" = "\\d\\d\\d"
+#'    )
+#'  ) %>%
+#'  add_linestarts(default = 1) %>%
+#'  modify_linestarts(
+#'    meta_col = "seminar_series",
+#'    meta_values = "201",
+#'    new_linestart = 2
+#'  )
 modify_linestarts <- function(scaffold_df,
                               meta_col = "filename",
                               meta_values,
@@ -316,7 +397,7 @@ modify_linestarts <- function(scaffold_df,
 
   assertthat::assert_that(
     isTRUE(all(meta_values %in% scaffold_df[[meta_col]])),
-    msg = paste("One or more meta_values are not the", meta_col, "column")
+    msg = paste("One or more meta_values were not found the", meta_col, "column")
   )
 
   scaffold_df[["linestart"]][ scaffold_df[[meta_col]] %in% meta_values ] <- new_linestart
@@ -325,21 +406,32 @@ modify_linestarts <- function(scaffold_df,
 
 }
 
-#' Add a default line-start value to the scaffold data-frame
+#' Add a default name or index of the sheet to read for each file
 #'
-#' @param scaffold_df A tibble/data.frame containing columns:
+#' Note: this only affects the reading of excel/spreadsheet files (e.g. workbooks
+#' containing multiple sheets)
+#' @inheritParams add_linestarts
 #'
-#' 1. filename - Name of the file
-#' 2. filepath - Path to the file
-#' 3. file_ext - File extension (e.g. .csv)
-#'
-#' @param default A number or string
-#' @param load_all_sheets
-#'
-#' @return
+#' @return `scaffold_df` with a `sheet_selection` column added, containing
+#' the default value supplied.
 #' @export
 #'
 #' @examples
+#'
+#' library(magrittr)
+#'
+#' tibble::tibble(
+#'   filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'   filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+#'   file_ext = c("csv", "csv", "csv")
+#' ) %>%
+#'  metadata_col_from_regex(
+#'    scaffold_df = .,
+#'    regex_list = list(
+#'      "seminar_series" = "\\d\\d\\d"
+#'    )
+#'  ) %>%
+#'  add_sheet_selections(default = "QA_responses A)
 add_sheet_selections <- function(scaffold_df, default = 1){
 
   assertthat::assert_that(
@@ -357,16 +449,38 @@ add_sheet_selections <- function(scaffold_df, default = 1){
 
 }
 
-#' Add a default line-start value to the scaffold data-frame
-#' in preparation for loading the data into R
+#' Modify the default linestart values for specific files
 #'
-#' @param scaffold_df
-#' @param default
+#' @inheritParams modify_linestarts
+#' @param new_sheets_id A string or number, name or index of the sheet to
+#' read the data from
 #'
-#' @return
+#' @return `scaffold_df`, with the `sheet_selection` value for the selected
+#' rows modified to be `new_sheets_id`
 #' @export
 #'
 #' @examples
+#'
+#' library(magrittr)
+#'
+#' tibble::tibble(
+#'   filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'   filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+#'   file_ext = c("csv", "csv", "csv")
+#' ) %>%
+#'  metadata_col_from_regex(
+#'    scaffold_df = .,
+#'    regex_list = list(
+#'      "seminar_series" = "\\d\\d\\d"
+#'    )
+#'  ) %>%
+#'  add_sheet_selections(default = "results1") %>%
+#'  modify_sheet_selections(
+#'    meta_col = "seminar_series",
+#'    meta_values = "101",
+#'    # common situation - slight inconsistency in sheet names
+#'    new_sheets_id = "Results1"
+#'  )
 modify_sheet_selections <- function(scaffold_df,
                                     meta_col = "filename",
                                     meta_values,

@@ -1,11 +1,53 @@
-#' load_materials_simple
+#' (Simple) automatically load the files using the supplied metadata
 #'
-#' @param scaffold_df
+#' Assumes that there is one rectangular dataset to read per-file
+#' and that each file is either csv or xlsx.
 #'
-#' @return
+#' In the case of csv the linestart is used to guide file reading.
+#'
+#' In the case of xlsx the linestart and sheet_selection are
+#' used to guide file reading.
+#'
+#' @inheritParams metadata_col_from_regex
+#'
+#' @return `scaffold_df` with a list column `datasets` added
+#' that contains the raw files (loaded using metadata in scaffold_df)
 #' @export
 #'
 #' @examples
+#'
+#' \dontrun{
+#'
+#' library(magrittr)
+#'
+#' tibble::tibble(
+#'   filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'   filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+#'   file_ext = c("csv", "csv", "csv")
+#' ) %>%
+#'  metadata_col_from_regex(
+#'    scaffold_df = .,
+#'    regex_list = list(
+#'      "seminar_series" = "\\d\\d\\d"
+#'    )
+#'  ) %>%
+#'  add_sheet_selections(default = "results1") %>%
+#'  modify_linestarts(
+#'    meta_col = "seminar_series",
+#'    meta_values = "101",
+#'    # common situation - slight inconsistency in sheet names
+#'    new_sheets_id = "Results1"
+#'  )
+#'  add_linestarts(default = 1) %>%
+#'  modify_linestarts(
+#'    meta_col = "seminar_series",
+#'    meta_values = "201",
+#'    new_linestart = 2
+#'  ) %>%
+#'  load_materials_simple()
+#'
+#' }
+#'
 load_materials_simple <- function(scaffold_df){
 
   # Runtime assertions
@@ -46,9 +88,10 @@ load_materials_simple <- function(scaffold_df){
 
 #' simple_read_switch
 #'
-#' @param scaffold_row
+#' @param scaffold_row A row of a `scaffold_df` dataframe
 #'
-#' @return
+#' @return A dataframe loaded via read_helper_csv
+#' or read_helper_xlsx
 #'
 #' @examples
 simple_read_switch <- function(scaffold_row){
@@ -70,9 +113,9 @@ simple_read_switch <- function(scaffold_row){
 
 #' read_helper_csv
 #'
-#' @param scaffold_row
+#' @inheritParams simple_read_switch
 #'
-#' @return
+#' @return A dataframe
 #'
 #' @examples
 read_helper_csv <- function(scaffold_row){
@@ -87,10 +130,18 @@ read_helper_csv <- function(scaffold_row){
     linestart_num <- scaffold_row[["linestart"]]
   }
 
+  assertthat::assert_that(
+    !is.na(as.integer(linestart_num)),
+    msg = paste(
+      "Invalid linstart value for file:",
+      scaffold_row[["filename"]]
+    )
+  )
+
   readr::read_csv(
     file = scaffold_row[["filepath"]],
     col_types = readr::cols(.default = "c"),
-    skip = (linestart_num - 1),
+    skip = (as.integer(linestart_num) - 1),
     progress = FALSE,
     name_repair = "unique"
   )
@@ -99,9 +150,9 @@ read_helper_csv <- function(scaffold_row){
 
 #' read_helper_xlsx
 #'
-#' @param scaffold_row
+#' @inheritParams simple_read_switch
 #'
-#' @return
+#' @return A dataframe
 #'
 #' @examples
 read_helper_xlsx <- function(scaffold_row){
@@ -115,6 +166,14 @@ read_helper_xlsx <- function(scaffold_row){
 
     linestart_num <- scaffold_row[["linestart"]]
   }
+
+  assertthat::assert_that(
+    !is.na(as.integer(linestart_num)),
+    msg = paste(
+      "Invalid linstart value for file:",
+      scaffold_row[["filename"]]
+    )
+  )
 
   if(!("sheet_selection") %in% names(scaffold_row)){
     warning("sheet selection was not supplied, defaulting to first sheet")
@@ -130,7 +189,7 @@ read_helper_xlsx <- function(scaffold_row){
     file = scaffold_row[["filepath"]],
     sheet = selected_sheet,
     col_types = "text",
-    skip = (linestart_num - 1),
+    skip = (as.integer(linestart_num) - 1),
     progress = FALSE
   )
 

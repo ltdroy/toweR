@@ -2,7 +2,7 @@
 % Please edit documentation in R/core-add-metadata.R
 \name{add_sheet_selections}
 \alias{add_sheet_selections}
-\title{Add a default line-start value to the scaffold data-frame}
+\title{Add a default name or index of the sheet to read for each file}
 \usage{
 add_sheet_selections(scaffold_df, default = 1)
 }
@@ -12,15 +12,17 @@ add_sheet_selections(scaffold_df, default = 1)
 \item filename - Name of the file
 \item filepath - Path to the file
 \item file_ext - File extension (e.g. .csv)
-}}
+}
 
-\item{default}{A number or string}
+And any other columns required by the function.}
 
-\item{load_all_sheets}{}
+\item{default}{Default value to use (added to all rows)}
 }
 \value{
-
+\code{scaffold_df} with a \code{sheet_selection} column added, containing
+the default value supplied.
 }
 \description{
-Add a default line-start value to the scaffold data-frame
+Note: this only affects the reading of excel/spreadsheet files (e.g. workbooks
+containing multiple sheets)
 }

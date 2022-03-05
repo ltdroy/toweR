@@ -1,17 +1,20 @@
-#' Vertically merge a set of data bricks
+#' Vertically merge the datasets stored a toweR scaffold df
+#' and produce diagnostics to confirm/refine the suitability
+#' of the merge
 #'
-#' @param scaffold_df
-#' @param diagnostics TRUE/FALSE
-#' @param keep_diagnostics TRUE/FALSE. Should diagnostic summary information be stored as an attribute of the output dataset,
-#' which can be viewed, or extracted wholesale, using `get_tower_diagnostics()`
+#' @inheritParams metadata_col_from_regex
+#' @param diagnostics (default: TRUE) TRUE/FALSE, run diagnostics on the vertical merge
+#' @param keep_diagnostics (default: FALSE) TRUE/FALSE. Should diagnostics
+#' be stored as an attribute of the output dataset,
+#' which can be viewed, or extracted wholesale, using `get_tower_diagnostics()`?
 #' @param add_metadata TRUE/FALSE/character vector:
-#' 1. TRUE - Add all `tower_blocks` metadata as columns in the output dataset.
-#' 2. FALSE - Don't add `tower_blocks` metadata to the output dataset.
+#' 1. TRUE - Add all `scaffold_df` metadata as columns in the output dataset.
+#' 2. FALSE - Don't add `scaffold_df` metadata to the output dataset.
 #' 3. character vector - add the named columns to the output dataset.
 #' @param selections TRUE/character vector:
-#' 1. TRUE - Select all columns in all data bricks
+#' 1. TRUE - Select all columns in all datasets
 #' 2. character vector - take the named columns from each data brick (where available)
-#' @param quiet TRUE/FALSE
+#' @param quiet TRUE/FALSE - report a brief overview of merge diagnostics in the console.
 #' @return
 #' A tibble/dataframe that contains a vertical merger of all of the dataframes in the supplied data_brick
 #' object. Optionally, it contains attributes:

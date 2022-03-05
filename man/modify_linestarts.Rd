@@ -2,8 +2,7 @@
 % Please edit documentation in R/core-add-metadata.R
 \name{modify_linestarts}
 \alias{modify_linestarts}
-\title{Add a default line-start value to the scaffold data-frame
-in preparation for loading the data into R}
+\title{Modify the default linestart values for specific files}
 \usage{
 modify_linestarts(
   scaffold_df,
@@ -18,19 +17,42 @@ modify_linestarts(
 \item filename - Name of the file
 \item filepath - Path to the file
 \item file_ext - File extension (e.g. .csv)
-}}
+}
+
+And any other columns required by the function.}
 
 \item{meta_col}{A string, the name of the meta column to use to identify
-files whose meta-data should be changed}
+files whose default metadata will be changed}
 
-\item{meta_values}{Rows matching these values will replace their linestart value with \code{new_linestart}}
+\item{meta_values}{Rows matching these values will replace their linestart/sheet_selection value with the new value`}
 
-\item{new_linestart}{A number or string}
+\item{new_linestart}{A number, the index of the row to start reading the data from}
 }
 \value{
 
 }
 \description{
-Add a default line-start value to the scaffold data-frame
-in preparation for loading the data into R
+Modify the default linestart values for specific files
+}
+\examples{
+
+library(magrittr)
+
+tibble::tibble(
+  filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+  filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+  file_ext = c("csv", "csv", "csv")
+) \%>\%
+ metadata_col_from_regex(
+   scaffold_df = .,
+   regex_list = list(
+     "seminar_series" = "\\\\d\\\\d\\\\d"
+   )
+ ) \%>\%
+ add_linestarts(default = 1) \%>\%
+ modify_linestarts(
+   meta_col = "seminar_series",
+   meta_values = "201",
+   new_linestart = 2
+ )
 }

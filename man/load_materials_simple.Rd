@@ -2,16 +2,66 @@
 % Please edit documentation in R/core-load-data.R
 \name{load_materials_simple}
 \alias{load_materials_simple}
-\title{load_materials_simple}
+\title{(Simple) automatically load the files using the supplied metadata}
 \usage{
 load_materials_simple(scaffold_df)
 }
 \arguments{
-\item{scaffold_df}{}
+\item{scaffold_df}{A tibble/data.frame containing columns:
+\enumerate{
+\item filename - Name of the file
+\item filepath - Path to the file
+\item file_ext - File extension (e.g. .csv)
+}
+
+And any other columns required by the function.}
 }
 \value{
-
+\code{scaffold_df} with a list column \code{datasets} added
+that contains the raw files (loaded using metadata in scaffold_df)
 }
 \description{
-load_materials_simple
+Assumes that there is one rectangular dataset to read per-file
+and that each file is either csv or xlsx.
+}
+\details{
+In the case of csv the linestart is used to guide file reading.
+
+In the case of xlsx the linestart and sheet_selection are
+used to guide file reading.
+}
+\examples{
+
+\dontrun{
+
+library(magrittr)
+
+tibble::tibble(
+  filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+  filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+  file_ext = c("csv", "csv", "csv")
+) \%>\%
+ metadata_col_from_regex(
+   scaffold_df = .,
+   regex_list = list(
+     "seminar_series" = "\\\\d\\\\d\\\\d"
+   )
+ ) \%>\%
+ add_sheet_selections(default = "results1") \%>\%
+ modify_linestarts(
+   meta_col = "seminar_series",
+   meta_values = "101",
+   # common situation - slight inconsistency in sheet names
+   new_sheets_id = "Results1"
+ )
+ add_linestarts(default = 1) \%>\%
+ modify_linestarts(
+   meta_col = "seminar_series",
+   meta_values = "201",
+   new_linestart = 2
+ ) \%>\%
+ load_materials_simple()
+
+}
+
 }

@@ -12,17 +12,41 @@ metadata_col_from_lookup(scaffold_df, lookup_list)
 \item filename - Name of the file
 \item filepath - Path to the file
 \item file_ext - File extension (e.g. .csv)
-}}
+}
+
+And any other columns required by the function.}
 
 \item{lookup_list}{A list of df/tibbles, all containing a column 'filename',
-covering each of the filnames in \code{scaffold_df}, and additional columns
-containing metadata corresponding to the files.
+with each of the (unique) values of the filename column in \code{scaffold_df},
+and additional columns containing metadata corresponding to the files.
 These lookups are joined into the scaffold_df by a left-join.}
 }
 \value{
-\code{scaffold_df} with additional columns created by joining the lookups
+\code{scaffold_df} with additional columns created by joining-in the lookups
 contained in \code{lookup_list}
 }
 \description{
 Add metadata columns to a scaffold using lookups that cover each filename
+}
+\examples{
+
+library(magrittr)
+
+# Metadata that you prepared in a spreadsheet (perhaps)
+series_lookup = tibble::tibble(
+                       filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+                       seminar_series = c("101", "201", "201"))
+
+tibble::tibble(
+  filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+  filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+  file_ext = c("csv", "csv", "csv")
+) \%>\%
+ metadata_col_from_lookup(
+   scaffold_df = .,
+   lookup_list = list(
+     series_lookup
+   )
+ )
+
 }

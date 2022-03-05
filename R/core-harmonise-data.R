@@ -1,13 +1,52 @@
-#' harmonise_by_explicit
+#' Harmonise column names across a list of dataframes
+#' using an explicit list of column name groups to
+#' align equivalent columns
 #'
-#' @param scaffold_df
-#' @param capture_list
-#' @param verbose
+#' @inheritParams metadata_col_from_regex
+#' @param capture_list A named list of character vectors, where the name of each
+#' list item is a harmonised column name to use, and values in each character
+#' vector are existing column names to convert to this name.
+#' @param verbose Report changes made in the console? (default: TRUE)
 #'
-#' @return
+#' @return `scaffold_df` with the column names of the dataframes in the `datasets`
+#' harmonised according to `capture_list`
 #' @export
 #'
 #' @examples
+#'
+#'\dontrun{
+#'  #' library(magrittr)
+#'
+#' tibble::tibble(
+#'   filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'   filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+#'   file_ext = c("csv", "csv", "csv")
+#' ) %>%
+#'  metadata_col_from_regex(
+#'    scaffold_df = .,
+#'    regex_list = list(
+#'      "seminar_series" = "\\d\\d\\d"
+#'    )
+#'  ) %>%
+#'  add_sheet_selections(default = "results1") %>%
+#'  modify_linestarts(
+#'    meta_col = "seminar_series",
+#'    meta_values = "101",
+#'    # common situation - slight inconsistency in sheet names
+#'    new_sheets_id = "Results1"
+#'  )
+#'  add_linestarts(default = 1) %>%
+#'  modify_linestarts(
+#'    meta_col = "seminar_series",
+#'    meta_values = "201",
+#'    new_linestart = 2
+#'  ) %>%
+#'  load_materials_simple() %>%
+#'  harmonise_by_explicit(., capture_list = list(
+#'    "results" = c("results", "ResultsA", "ResultsB")
+#'  ))
+#'}
+#'
 harmonise_by_explicit <- function(scaffold_df, capture_list, verbose = TRUE){
 
   assertthat::assert_that(
@@ -31,12 +70,12 @@ harmonise_by_explicit <- function(scaffold_df, capture_list, verbose = TRUE){
 
 #' rename_cols_by_capture_list
 #'
-#' @param df
-#' @param df_name
-#' @param capture_list
-#' @param verbose
+#' @inheritParams harmonise_by_explicit
+#' @param df A dataframe
+#' @param df_name string, a label for the dataframe
+#' @param verbose report changes to the console?
 #'
-#' @return
+#' @return `df` with renamed column names according to `capture_list`
 #'
 #' @examples
 rename_cols_by_capture_list <- function(df, df_name, capture_list, verbose){

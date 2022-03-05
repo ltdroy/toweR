@@ -5,7 +5,7 @@
 \title{Add metadata columns to a scaffold using regex to
 extract information from the filename}
 \usage{
-metadata_col_from_regex(scaffold_df, regex_list)
+metadata_col_from_regex(scaffold_df, regex_list, source_column = "filename")
 }
 \arguments{
 \item{scaffold_df}{A tibble/data.frame containing columns:
@@ -13,11 +13,16 @@ metadata_col_from_regex(scaffold_df, regex_list)
 \item filename - Name of the file
 \item filepath - Path to the file
 \item file_ext - File extension (e.g. .csv)
-}}
+}
+
+And any other columns required by the function.}
 
 \item{regex_list}{A named list of strings, with the names corresponding
 to the new columns to be created, and the strings representing
-regex patterns used to extract information from the filename column.}
+regex patterns used to extract information from the source column.}
+
+\item{source_column}{A string of length 1 (default: 'filename'), the name of a
+column in the dataset from which values are extracted using the supplied regex.}
 }
 \value{
 \code{scaffold_df} with additional columns created by applying \code{regex_list}
@@ -25,4 +30,21 @@ regex patterns used to extract information from the filename column.}
 \description{
 Add metadata columns to a scaffold using regex to
 extract information from the filename
+}
+\examples{
+
+library(magrittr)
+
+tibble::tibble(
+  filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+  filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+  file_ext = c("csv", "csv", "csv")
+) \%>\%
+ metadata_col_from_regex(
+   scaffold_df = .,
+   regex_list = list(
+     "seminar_series" = "\\\\d\\\\d\\\\d"
+   )
+ )
+
 }

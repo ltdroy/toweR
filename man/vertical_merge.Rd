@@ -2,7 +2,9 @@
 % Please edit documentation in R/core-vertical-merge.R
 \name{vertical_merge}
 \alias{vertical_merge}
-\title{Vertically merge a set of data bricks}
+\title{Vertically merge the datasets stored a toweR scaffold df
+and produce diagnostics to confirm/refine the suitability
+of the merge}
 \usage{
 vertical_merge(
   scaffold_df,
@@ -15,25 +17,35 @@ vertical_merge(
 )
 }
 \arguments{
+\item{scaffold_df}{A tibble/data.frame containing columns:
+\enumerate{
+\item filename - Name of the file
+\item filepath - Path to the file
+\item file_ext - File extension (e.g. .csv)
+}
+
+And any other columns required by the function.}
+
 \item{selections}{TRUE/character vector:
 \enumerate{
-\item TRUE - Select all columns in all data bricks
+\item TRUE - Select all columns in all datasets
 \item character vector - take the named columns from each data brick (where available)
 }}
 
-\item{diagnostics}{TRUE/FALSE}
+\item{diagnostics}{(default: TRUE) TRUE/FALSE, run diagnostics on the vertical merge}
 
-\item{keep_diagnostics}{TRUE/FALSE. Should diagnostic summary information be stored as an attribute of the output dataset,
-which can be viewed, or extracted wholesale, using \code{get_tower_diagnostics()}}
+\item{keep_diagnostics}{(default: FALSE) TRUE/FALSE. Should diagnostics
+be stored as an attribute of the output dataset,
+which can be viewed, or extracted wholesale, using \code{get_tower_diagnostics()}?}
 
 \item{add_metadata}{TRUE/FALSE/character vector:
 \enumerate{
-\item TRUE - Add all \code{tower_blocks} metadata as columns in the output dataset.
-\item FALSE - Don't add \code{tower_blocks} metadata to the output dataset.
+\item TRUE - Add all \code{scaffold_df} metadata as columns in the output dataset.
+\item FALSE - Don't add \code{scaffold_df} metadata to the output dataset.
 \item character vector - add the named columns to the output dataset.
 }}
 
-\item{quiet}{TRUE/FALSE}
+\item{quiet}{TRUE/FALSE - report a brief overview of merge diagnostics in the console.}
 }
 \value{
 A tibble/dataframe that contains a vertical merger of all of the dataframes in the supplied data_brick
@@ -46,5 +58,7 @@ object. Optionally, it contains attributes:
 }
 }
 \description{
-Vertically merge a set of data bricks
+Vertically merge the datasets stored a toweR scaffold df
+and produce diagnostics to confirm/refine the suitability
+of the merge
 }

@@ -2,8 +2,7 @@
 % Please edit documentation in R/core-add-metadata.R
 \name{modify_sheet_selections}
 \alias{modify_sheet_selections}
-\title{Add a default line-start value to the scaffold data-frame
-in preparation for loading the data into R}
+\title{Modify the default linestart values for specific files}
 \usage{
 modify_sheet_selections(
   scaffold_df,
@@ -13,12 +12,50 @@ modify_sheet_selections(
 )
 }
 \arguments{
-\item{default}{}
+\item{scaffold_df}{A tibble/data.frame containing columns:
+\enumerate{
+\item filename - Name of the file
+\item filepath - Path to the file
+\item file_ext - File extension (e.g. .csv)
+}
+
+And any other columns required by the function.}
+
+\item{meta_col}{A string, the name of the meta column to use to identify
+files whose default metadata will be changed}
+
+\item{meta_values}{Rows matching these values will replace their linestart/sheet_selection value with the new value`}
+
+\item{new_sheets_id}{A string or number, name or index of the sheet to
+read the data from}
 }
 \value{
-
+\code{scaffold_df}, with the \code{sheet_selection} value for the selected
+rows modified to be \code{new_sheets_id}
 }
 \description{
-Add a default line-start value to the scaffold data-frame
-in preparation for loading the data into R
+Modify the default linestart values for specific files
+}
+\examples{
+
+library(magrittr)
+
+tibble::tibble(
+  filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+  filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+  file_ext = c("csv", "csv", "csv")
+) \%>\%
+ metadata_col_from_regex(
+   scaffold_df = .,
+   regex_list = list(
+     "seminar_series" = "\\\\d\\\\d\\\\d"
+   )
+ ) \%>\%
+ add_sheet_selections(default = "results1") \%>\%
+ modify_sheet_selections(
+   meta_col = "seminar_series",
+   meta_values = "101",
+   # common situation - slight inconsistency in sheet names
+   new_sheets_id = "Results1"
+ )
 }

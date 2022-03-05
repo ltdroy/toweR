@@ -2,16 +2,70 @@
 % Please edit documentation in R/core-harmonise-data.R
 \name{harmonise_by_explicit}
 \alias{harmonise_by_explicit}
-\title{harmonise_by_explicit}
+\title{Harmonise column names across a list of dataframes
+using an explicit list of column name groups to
+align equivalent columns}
 \usage{
 harmonise_by_explicit(scaffold_df, capture_list, verbose = TRUE)
 }
 \arguments{
-\item{verbose}{}
+\item{scaffold_df}{A tibble/data.frame containing columns:
+\enumerate{
+\item filename - Name of the file
+\item filepath - Path to the file
+\item file_ext - File extension (e.g. .csv)
+}
+
+And any other columns required by the function.}
+
+\item{capture_list}{A named list of character vectors, where the name of each
+list item is a harmonised column name to use, and values in each character
+vector are existing column names to convert to this name.}
+
+\item{verbose}{Report changes made in the console? (default: TRUE)}
 }
 \value{
-
+\code{scaffold_df} with the column names of the dataframes in the \code{datasets}
+harmonised according to \code{capture_list}
 }
 \description{
-harmonise_by_explicit
+Harmonise column names across a list of dataframes
+using an explicit list of column name groups to
+align equivalent columns
+}
+\examples{
+
+\dontrun{
+ #' library(magrittr)
+
+tibble::tibble(
+  filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+  filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+  file_ext = c("csv", "csv", "csv")
+) \%>\%
+ metadata_col_from_regex(
+   scaffold_df = .,
+   regex_list = list(
+     "seminar_series" = "\\\\d\\\\d\\\\d"
+   )
+ ) \%>\%
+ add_sheet_selections(default = "results1") \%>\%
+ modify_linestarts(
+   meta_col = "seminar_series",
+   meta_values = "101",
+   # common situation - slight inconsistency in sheet names
+   new_sheets_id = "Results1"
+ )
+ add_linestarts(default = 1) \%>\%
+ modify_linestarts(
+   meta_col = "seminar_series",
+   meta_values = "201",
+   new_linestart = 2
+ ) \%>\%
+ load_materials_simple() \%>\%
+ harmonise_by_explicit(., capture_list = list(
+   "results" = c("results", "ResultsA", "ResultsB")
+ ))
+}
+
 }
