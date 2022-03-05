@@ -299,4 +299,32 @@ missingness_col_basic <- function(colname, df){
 
 }
 
+#' get_tower_diagnostics
+#'
+#' Get the diagnostics from a dataframe constructed
+#' using toweR::vertical_merge(scaffold_df, keep_diagnostics = TRUE)
+#'
+#' @param df A df produced by a call to toweR::vertical_merge(scaffold_df, keep_diagnostics = TRUE)
+#'
+#' @return The a list of dataframes providing diagnostic checks for the vertical
+#' merge used to combine the different datasets.
+#' @export
+#'
+#' @examples
+#'
+#' \dontrun{
+#'  final_df <- vertical_merge(scaffold_df, keep_diagnostics = TRUE)
+#'  full_merge_diagnostics <- get_tower_diagnostics(final_df)
+#' }
+#'
+get_tower_diagnostics <- function(df){
+
+  assertthat::assert_that(
+    "diagnostics" %in% (attributes(df) %>% names())
+  )
+
+  attr(df, "diagnostics")
+
+}
+
 
