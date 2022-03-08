@@ -15,6 +15,7 @@
 #' 1. TRUE - Select all columns in all datasets
 #' 2. character vector - take the named columns from each data brick (where available)
 #' @param quiet TRUE/FALSE - report a brief overview of merge diagnostics in the console.
+#' @param coverage NULL
 #' @return
 #' A tibble/dataframe that contains a vertical merger of all of the dataframes in the supplied data_brick
 #' object. Optionally, it contains attributes:
@@ -25,6 +26,41 @@
 #' @export
 #'
 #' @examples
+#'
+#' \dontrun{
+#'
+#'
+#' library(magrittr)
+#'
+#' tibble::tibble(
+#'   filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+#'   filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+#'   file_ext = c("csv", "csv", "csv")
+#' ) %>%
+#'  metadata_col_from_regex(
+#'    scaffold_df = .,
+#'    regex_list = list(
+#'      "seminar_series" = "\\d\\d\\d"
+#'    )
+#'  ) %>%
+#'  add_sheet_selections(default = "results1") %>%
+#'  modify_linestarts(
+#'    meta_col = "seminar_series",
+#'    meta_values = "101",
+#'    # common situation - slight inconsistency in sheet names
+#'    new_sheets_id = "Results1"
+#'  )
+#'  add_linestarts(default = 1) %>%
+#'  modify_linestarts(
+#'    meta_col = "seminar_series",
+#'    meta_values = "201",
+#'    new_linestart = 2
+#'  ) %>%
+#'  load_materials_simple() %>%
+#'  vertical_merge()
+#'
+#' }
+#'
 vertical_merge <- function(
   scaffold_df,
   selections = TRUE,
@@ -50,10 +86,7 @@ vertical_merge <- function(
     msg = "At-least one of the dataset objects in scaffold_df is not a data.frame"
   )
 
-  scaffold_df[["dfs_processed"]] <- purrr::map(
-    scaffold_df[["datasets"]],
-    ~ .x
-  )
+  scaffold_df[["dfs_processed"]] <- scaffold_df[["datasets"]]
 
 
   scaffold_df <- apply_selections(scaffold_df, selections = selections)
@@ -88,6 +121,15 @@ vertical_merge <- function(
 
 }
 
+#' Extract selected columns from datasets in scaffold
+#'
+#' @param scaffold_df scaffold dataframe
+#' @param selections TRUE/character vector, keep all (TRUE) or selected
+#' (colnames in character vector) columns in each dataframe in the scaffold
+#'
+#' @return `scaffold_df` with column selections applied to the datasets
+#'
+#' @examples
 apply_selections <- function(scaffold_df,
                              selections){
 
@@ -120,12 +162,22 @@ apply_selections <- function(scaffold_df,
 
 }
 
+#' include_metadata
+#'
+#' @param scaffold_df scaffold_df
+#' @param add_metadata boolean
+#'
+#' @return `scaffold_df` with metadata
+#'
+#' @examples
 include_metadata <- function(scaffold_df,
                              add_metadata) {
 
   # Add metadata if needed
   if(isTRUE(add_metadata)){
 
+    # add all non-list columns in the scaffold_df
+    # to the datasets (by row)
     scaffold_df[["dfs_processed"]] <- purrr::pmap(
       scaffold_df,
       function(...){
@@ -147,7 +199,8 @@ include_metadata <- function(scaffold_df,
 
       assertthat::assert_that(
         all(add_metadata %in% names(scaffold_df)),
-        !("dfs_processed" %in% add_metadata)
+        !("dfs_processed" %in% add_metadata),
+        !("datasets" %in% add_metadata)
       )
 
       scaffold_df[["dfs_processed"]] <- purrr::pmap(

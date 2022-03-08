@@ -45,6 +45,8 @@ which can be viewed, or extracted wholesale, using \code{get_tower_diagnostics()
 \item character vector - add the named columns to the output dataset.
 }}
 
+\item{coverage}{NULL}
+
 \item{quiet}{TRUE/FALSE - report a brief overview of merge diagnostics in the console.}
 }
 \value{
@@ -61,4 +63,41 @@ object. Optionally, it contains attributes:
 Vertically merge the datasets stored a toweR scaffold df
 and produce diagnostics to confirm/refine the suitability
 of the merge
+}
+\examples{
+
+\dontrun{
+
+
+library(magrittr)
+
+tibble::tibble(
+  filename = c("a_101.csv", "a_201.csv", "b_201.csv"),
+  filepath = c("data/a_101.csv", "data/a_201.csv", "data/b_201.csv"),
+  file_ext = c("csv", "csv", "csv")
+) \%>\%
+ metadata_col_from_regex(
+   scaffold_df = .,
+   regex_list = list(
+     "seminar_series" = "\\\\d\\\\d\\\\d"
+   )
+ ) \%>\%
+ add_sheet_selections(default = "results1") \%>\%
+ modify_linestarts(
+   meta_col = "seminar_series",
+   meta_values = "101",
+   # common situation - slight inconsistency in sheet names
+   new_sheets_id = "Results1"
+ )
+ add_linestarts(default = 1) \%>\%
+ modify_linestarts(
+   meta_col = "seminar_series",
+   meta_values = "201",
+   new_linestart = 2
+ ) \%>\%
+ load_materials_simple() \%>\%
+ vertical_merge()
+
+}
+
 }
