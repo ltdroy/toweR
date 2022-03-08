@@ -2,16 +2,22 @@
 % Please edit documentation in R/core-merge-diagnostics.R
 \name{run_diagnostics}
 \alias{run_diagnostics}
-\title{run_diagnostics}
+\title{Run diagnostics on a vertical merge using the source material (scaffold_df)
+and the final merged dataset (tower_df)}
 \usage{
 run_diagnostics(scaffold_df, tower_df, diagnostics)
 }
 \arguments{
-\item{diagnostics}{}
+\item{scaffold_df}{scaffold df containing datasets to be merged}
+
+\item{tower_df}{A single df containing the vertically merged data}
+
+\item{diagnostics}{A boolean, if not TRUE, NULL returned}
 }
 \value{
-
+diagnostics list of dfs
 }
 \description{
-run_diagnostics
+Run diagnostics on a vertical merge using the source material (scaffold_df)
+and the final merged dataset (tower_df)
 }

@@ -7,10 +7,12 @@
 eval_coltype_diagnostics(diag_ob, tower_df)
 }
 \arguments{
-\item{tower_df}{}
+\item{diag_ob}{The diagnostic df}
+
+\item{tower_df}{The final merged data}
 }
 \value{
-
+boolean
 }
 \description{
 eval_coltype_diagnostics
