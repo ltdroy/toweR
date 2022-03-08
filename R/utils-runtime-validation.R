@@ -1,3 +1,9 @@
+#' Standardised runtime assertion: is file scaffold
+#'
+#' @param ob A candidate scaffold_df object
+#'
+#' @return TRUE
+#'
 is_file_scaffold <- function(ob){
 
   isTRUE(assertthat::assert_that(
