@@ -350,7 +350,8 @@ add_linestarts <- function(scaffold_df, default = 1){
 #' @param meta_values Rows matching these values will replace their linestart/sheet_selection value with the new value`
 #' @param new_linestart A number, the index of the row to start reading the data from
 #'
-#' @return
+#' @return `scaffold_df` with selected values in the `linestart` column updated with
+#' the `new_linestart` value
 #' @export
 #'
 #' @examples

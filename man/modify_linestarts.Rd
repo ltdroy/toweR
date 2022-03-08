@@ -29,7 +29,8 @@ files whose default metadata will be changed}
 \item{new_linestart}{A number, the index of the row to start reading the data from}
 }
 \value{
-
+\code{scaffold_df} with selected values in the \code{linestart} column updated with
+the \code{new_linestart} value
 }
 \description{
 Modify the default linestart values for specific files
