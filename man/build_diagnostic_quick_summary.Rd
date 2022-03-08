@@ -7,10 +7,13 @@
 build_diagnostic_quick_summary(diagnostics_list, tower_df)
 }
 \arguments{
-\item{tower_df}{}
+\item{diagnostics_list}{A list of dfs containing diagnostic summaries of
+for different aspects of the merge}
+
+\item{tower_df}{The final merged dataset}
 }
 \value{
-
+string message
 }
 \description{
 build_diagnostic_quick_summary

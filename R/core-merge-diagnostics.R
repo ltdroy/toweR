@@ -1,11 +1,12 @@
-#' run_diagnostics
+#' Run diagnostics on a vertical merge using the source material (scaffold_df)
+#' and the final merged dataset (tower_df)
 #'
-#' @param scaffold_df
-#' @param tower_df
-#' @param diagnostics
 #'
-#' @return
-#' @export
+#' @param scaffold_df scaffold df containing datasets to be merged
+#' @param tower_df A single df containing the vertically merged data
+#' @param diagnostics A boolean, if not TRUE, NULL returned
+#'
+#' @return diagnostics list of dfs
 #'
 #' @examples
 run_diagnostics <- function(scaffold_df,
@@ -27,10 +28,11 @@ run_diagnostics <- function(scaffold_df,
 
 #' build_diagnostic_quick_summary
 #'
-#' @param diagnostics_list
-#' @param tower_df
+#' @param diagnostics_list A list of dfs containing diagnostic summaries of
+#' for different aspects of the merge
+#' @param tower_df The final merged dataset
 #'
-#' @return
+#' @return string message
 #'
 #' @examples
 build_diagnostic_quick_summary <- function(diagnostics_list, tower_df){
@@ -62,11 +64,10 @@ build_diagnostic_quick_summary <- function(diagnostics_list, tower_df){
 
 #' eval_missingness_diagnostics
 #'
-#' @param diag_ob
-#' @param tower_df
+#' @param diag_ob The diagnostic df
+#' @param tower_df The final merged data
 #'
-#' @return
-#' @export
+#' @return boolean
 #'
 #' @examples
 eval_missingness_diagnostics <- function(diag_ob, tower_df){
@@ -92,11 +93,9 @@ eval_missingness_diagnostics <- function(diag_ob, tower_df){
 
 #' eval_coltype_diagnostics
 #'
-#' @param diag_ob
-#' @param tower_df
+#' @inheritParams eval_missingness_diagnostics
 #'
-#' @return
-#' @export
+#' @return boolean
 #'
 #' @examples
 eval_coltype_diagnostics <- function(diag_ob, tower_df){
@@ -122,11 +121,9 @@ eval_coltype_diagnostics <- function(diag_ob, tower_df){
 
 #' eval_colname_diagnostics
 #'
-#' @param diag_ob
-#' @param tower_df
+#' @inheritParams eval_missingness_diagnostics
 #'
-#' @return
-#' @export
+#' @return boolean
 #'
 #' @examples
 eval_colname_diagnostics <- function(diag_ob, tower_df){
@@ -152,10 +149,9 @@ eval_colname_diagnostics <- function(diag_ob, tower_df){
 
 #' run_missingness_diagnostics
 #'
-#' @param scaffold_df
-#' @param tower_df
+#' @inheritParams run_diagnostics
 #'
-#' @return
+#' @return diagnostics df
 #'
 #' @examples
 run_missingness_diagnostics <- function(scaffold_df, tower_df){
@@ -190,10 +186,9 @@ run_missingness_diagnostics <- function(scaffold_df, tower_df){
 
 #' run_colname_diagnostics
 #'
-#' @param scaffold_df
-#' @param tower_df
+#' @inheritParams run_diagnostics
 #'
-#' @return
+#' @return diagnostics_df
 #'
 #' @examples
 run_colname_diagnostics <- function(scaffold_df, tower_df){
@@ -225,10 +220,9 @@ run_colname_diagnostics <- function(scaffold_df, tower_df){
 
 #' run_coltype_diagnostics
 #'
-#' @param scaffold_df
-#' @param tower_df
+#' @inheritParams run_diagnostics
 #'
-#' @return
+#' @return diagnostic df
 #'
 #' @examples
 run_coltype_diagnostics <- function(scaffold_df, tower_df){
@@ -261,12 +255,22 @@ run_coltype_diagnostics <- function(scaffold_df, tower_df){
 
 }
 
-#' classify_column_basic
+#' Get column type label for column in df
 #'
-#' @param colname
-#' @param df
+#' Returns a string tag indicating the data-type of
+#' the column named in `colname`
 #'
-#' @return
+#' @param colname name of column in `df`
+#' @param df a dataframe
+#'
+#' @return a string, one of:
+#'
+#' 1. ch - character
+#' 2. nm - numeric
+#' 3. df - date
+#' 4. ls - list-col
+#' 5. ot - other
+#' 6. NA - colname not found in df
 #'
 #' @examples
 classify_column_basic <- function(colname, df){
@@ -282,12 +286,11 @@ classify_column_basic <- function(colname, df){
 
 }
 
-#' missingness_col_basic
+#' Return the proportion of missing values in a column of a df
 #'
-#' @param colname
-#' @param df
+#' @inheritParams classify_column_basic
 #'
-#' @return
+#' @return prop. missing values in column
 #'
 #' @examples
 missingness_col_basic <- function(colname, df){

@@ -7,10 +7,12 @@
 run_missingness_diagnostics(scaffold_df, tower_df)
 }
 \arguments{
-\item{tower_df}{}
+\item{scaffold_df}{scaffold df containing datasets to be merged}
+
+\item{tower_df}{A single df containing the vertically merged data}
 }
 \value{
-
+diagnostics df
 }
 \description{
 run_missingness_diagnostics

@@ -2,16 +2,18 @@
 % Please edit documentation in R/core-merge-diagnostics.R
 \name{missingness_col_basic}
 \alias{missingness_col_basic}
-\title{missingness_col_basic}
+\title{Return the proportion of missing values in a column of a df}
 \usage{
 missingness_col_basic(colname, df)
 }
 \arguments{
-\item{df}{}
+\item{colname}{name of column in \code{df}}
+
+\item{df}{a dataframe}
 }
 \value{
-
+prop. missing values in column
 }
 \description{
-missingness_col_basic
+Return the proportion of missing values in a column of a df
 }

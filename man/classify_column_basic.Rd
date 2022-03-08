@@ -2,16 +2,27 @@
 % Please edit documentation in R/core-merge-diagnostics.R
 \name{classify_column_basic}
 \alias{classify_column_basic}
-\title{classify_column_basic}
+\title{Get column type label for column in df}
 \usage{
 classify_column_basic(colname, df)
 }
 \arguments{
-\item{df}{}
+\item{colname}{name of column in \code{df}}
+
+\item{df}{a dataframe}
 }
 \value{
-
+a string, one of:
+\enumerate{
+\item ch - character
+\item nm - numeric
+\item df - date
+\item ls - list-col
+\item ot - other
+\item NA - colname not found in df
+}
 }
 \description{
-classify_column_basic
+Returns a string tag indicating the data-type of
+the column named in \code{colname}
 }
