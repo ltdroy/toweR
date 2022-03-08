@@ -1,10 +1,12 @@
-#' check_metadata_coverage
+#' Check the metadata for files represented in a scaffold_df, against
+#' a set of expected values, to identify any coverage gaps in the
+#' loaded data
 #'
-#' @param scaffold_df
-#' @param meta_col
-#' @param expected_values
+#' @inheritParams metadata_col_from_regex
+#' @param meta_col name of column to check
+#' @param expected_values values expected in column `meta_col`
 #'
-#' @return
+#' @return `scaffold_df` if coverage matches expected, error otherwise
 #' @export
 #'
 #' @examples

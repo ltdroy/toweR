@@ -2,16 +2,31 @@
 % Please edit documentation in R/core-file-coverage.R
 \name{check_metadata_coverage}
 \alias{check_metadata_coverage}
-\title{check_metadata_coverage}
+\title{Check the metadata for files represented in a scaffold_df, against
+a set of expected values, to identify any coverage gaps in the
+loaded data}
 \usage{
 check_metadata_coverage(scaffold_df, meta_col, expected_values)
 }
 \arguments{
-\item{expected_values}{}
+\item{scaffold_df}{A tibble/data.frame containing columns:
+\enumerate{
+\item filename - Name of the file
+\item filepath - Path to the file
+\item file_ext - File extension (e.g. .csv)
+}
+
+And any other columns required by the function.}
+
+\item{meta_col}{name of column to check}
+
+\item{expected_values}{values expected in column \code{meta_col}}
 }
 \value{
-
+\code{scaffold_df} if coverage matches expected, error otherwise
 }
 \description{
-check_metadata_coverage
+Check the metadata for files represented in a scaffold_df, against
+a set of expected values, to identify any coverage gaps in the
+loaded data
 }
